@@ -16,6 +16,13 @@ version: 0.0.1
 - 用户在 `.fleet/state.yaml` 存在的项目里提到「域名 / HTTPS / 扩 / 缩」
 - 用户问「上次 push 是不是挂了 / 为什么没切过去 / 容器起不来」
 
+## 前提:EE panel
+
+vibe-deploy 的服务端 API(`/api/v1/cli`)**仅 EE 版 panel 提供**。任何命令
+返回 reason `panel.no_cliapi` 时,说明对端是 CE panel —— 直接告知用户:
+「这台 panel 是 CE(开源版),vibe deploy 需要 fleetpanel-ee;CE 请走 panel
+UI 操作」。不要重试,不要试图用别的命令绕。
+
 ## Workflows
 
 | id                              | 何时套用                                     |
@@ -27,7 +34,10 @@ version: 0.0.1
 | `ci-wire-github`                | 把 fleet push 织进 GitHub Actions            |
 | `troubleshoot-build-failed`     | 编译挂了的诊断回路                           |
 | `troubleshoot-runtime-failed`   | 容器跑挂了 / 起不来                          |
+| `host-pick`                     | 选定/修正 state.hosts;preflight 报 host / drift gap |
 | `host-enroll`                   | 加新机器                                     |
+| `source-pick`                   | 确定项目 source 类型;preflight 报 source gap |
+| `expose-domain`                 | 补齐 expose.domain;preflight 报 cert gap(域名未设)|
 | `rollback`                      | 回滚一个 instance                            |
 
 ## 编排原则
