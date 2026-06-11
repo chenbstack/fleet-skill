@@ -9,7 +9,7 @@
 | `auth`              | `login` / `logout` / `set-password` / `whoami` |
 | `tokens`            | `list` / `create` / `revoke <id>`       |
 | `users`             | `list` / `get <id>` / `create` / `patch <id>` / `delete <id>` / `reset-password <id>` —— panel 本地账号管理(RBAC policy 走 `patch`) |
-| `hosts`             | `list` / `add` ⚠️ / `get <id>` / `remove <id>` —— `add` 暂走 panel UI(后端返 `host.enroll_via_ui`),CLI 入口保留但实际入网由 UI 完成 |
+| `hosts`             | `list` / `add` ⚠️ / `enroll-script` / `get <id>` / `remove <id>` —— `enroll-script` 建 pending host 并返自包含安装脚本(一次性 token,24h;cloud-init / 云助手 / root 手跑均可,**勿把 script 写日志**);`add`(panel 代登 SSH)暂走 panel UI(返 `host.enroll_via_ui`) |
 | `hosts components`  | `check <host>` / `install <host> --components docker,…`(docker · openresty · registry_pull · buildx 四件套) |
 | `dns-accounts`      | `list` / `add` / `remove <id>`          |
 | `acme-accounts`     | `list` / `add` / `remove <id>`          |
@@ -36,6 +36,7 @@
 | -------------------------------- | ------------------------------------------------- |
 | `site-certs check <domain>`      | `{ exact, wildcard_match, not_after }`            |
 | `hosts components check <host>`  | `{ online, agent, disk, mem, components{...} }`   |
+| `hosts enroll-script --name <n>` | `{ host_id, script, expires_at }`(script 含一次性 token,勿记日志) |
 | `dns-accounts list --for <fqdn>` | 按 zone 反查匹配凭据                              |
 | `probe <url>`                    | http-01 可达性                                    |
 
@@ -43,7 +44,7 @@
 
 | 工具 | 用途 |
 | --- | --- |
-| `aliyun` | `host-enroll-aliyun` 使用;查 ECS、读/写安全组、通过云助手 RunCommand 执行接管脚本。只复用用户本机 profile,不把 AccessKey 写入 panel / repo。 |
+| `aliyun` | `host-enroll-aliyun` / `host-buy-aliyun` 使用;查 ECS、读/写安全组、询价下单(AutoPay=false)、云助手 RunCommand 执行接管脚本。只复用用户本机 profile,不把 AccessKey 写入 panel / repo。 |
 | `tccli` | `host-enroll-tencent` 使用;查 CVM、读/写安全组、通过 TAT RunCommand 执行接管脚本。只复用用户本机 profile,不把 SecretId / SecretKey 写入 panel / repo。 |
 
 ## 全局约定

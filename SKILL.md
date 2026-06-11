@@ -47,7 +47,8 @@ UI 操作」。不要重试,不要试图用别的命令绕。
 | `troubleshoot-build-failed`     | 编译挂了的诊断回路                           |
 | `troubleshoot-runtime-failed`   | 容器跑挂了 / 起不来                          |
 | `host-pick`                     | 选定/修正 state.hosts;preflight 报 host / drift gap |
-| `host-enroll`                   | 加新机器;先问云厂商,阿里云可走本地 CLI 自动化 |
+| `host-enroll`                   | 加新机器;先问有没有服务器(没有→帮买),再按云厂商分支 |
+| `host-buy-aliyun`               | 没有服务器:对话内选配 / 询价 / AutoPay=false 下单 / 扫码支付 / UserData 自动接入 |
 | `host-enroll-aliyun`            | 阿里云 ECS:本机 `aliyun` CLI 查实例 / 开安全组 / 云助手接管 |
 | `host-enroll-tencent`           | 腾讯云 CVM:本机 `tccli` 查实例 / 开安全组 / TAT 接管 |
 | `source-pick`                   | 确定项目 source 类型;preflight 报 source gap |

@@ -117,12 +117,18 @@ tccli tat RunCommand \
 如果返回未安装 agent、agent 不在线、实例非 VPC 或非 RUNNING,提示用户处理 TAT
 Agent 或回到 [`host-enroll`](host-enroll.md) 的 UI / SSH fallback。
 
-正式执行前先从当前 panel / CLI 拿接管脚本或用户确认脚本来源。当前
-`fleet hosts add` 仍可能只返回 `host.enroll_via_ui`;如果 CLI / panel 不能
-给出一次性接管脚本或 enrollment token,不要伪造,只完成实例选择 + 安全组准备,
-然后回到 [`host-enroll`](host-enroll.md) 的 UI fallback。
+接管脚本从 panel 拿(一次性 token,24h 有效;脚本幂等可重跑):
 
-拿到脚本后,不要把 token 打印到最终回复;脚本必须 Base64 后传 `Content`:
+```sh
+fleet hosts enroll-script --name <实例名> \
+  [--panel-addr <公网host:7443>] [--panel-url https://<公网host>] \
+  --output json
+# → { host_id, script, expires_at }
+```
+
+注意 CVM 是从公网连 panel:`panel_addr`(agent gRPC 回连)和 `panel_url`
+(下载 agent 二进制)都必须是 CVM 可达的地址,panel 在内网/本机时要用 flag
+覆盖。不要把 token / 脚本内容打印到最终回复;脚本必须 Base64 后传 `Content`:
 
 ```sh
 tccli tat RunCommand \
