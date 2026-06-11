@@ -86,4 +86,5 @@ A:多数是**外部依赖**:DB 挂了 / Redis 没响应 / 上游 API down。doct
 **Q:容器 OOMKilled,但 `mem_pct` 看着不高?**
 A:`docker stats` 给的是**当前瞬时**值,OOMKill 是峰值触发的。改看
 `docker inspect <id> --format '{{.State.OOMKilled}} {{.RestartCount}}'`。修法是
-升 `resources.memory_limit`(`fleet app-instances update` 改 spec)。
+升 `resources.memory_limit` —— CLI **没有** `app-instances update`,去 panel UI
+实例详情改 spec(只改 replicas / host 分布才走 `scale`)。

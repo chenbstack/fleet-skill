@@ -33,7 +33,7 @@ inline 提示用户在哪拿:**优先给 CLI 命令(`gh secret` 不适用,但 `o
 fleet dns-accounts add \
   --provider <cloudflare|...> \
   --label "<human-readable>" \
-  --credentials api_token=$CF_TOKEN \
+  --credential api_token=$CF_TOKEN \
   --output json
 ```
 
@@ -71,4 +71,4 @@ A:对。每个 provider 自己一套字段:
 - aliyun:`access_key_id` + `access_key_secret`
 - dnspod:`dnspod_token`(`id,key` 形式)
 - route53:`aws_access_key_id` + `aws_secret_access_key` + `aws_region`
-`--credentials` flag 接 k=v 多次出现,按 provider 填对应字段。
+`--credential` flag 接 k=v,可多次出现,按 provider 填对应字段。

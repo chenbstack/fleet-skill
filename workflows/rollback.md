@@ -69,9 +69,9 @@ fleet status <app> --wait 30s --output json
 ## FAQ
 
 **Q:回滚到 v1.6.1 成功了,下次 push 还能用 v1.6.2 吗?**
-A:不能。v1.6.2 已经在 `app-versions list` 里(且没标 rolled_back —— 标的是
-回滚源,不是回滚目标 上次 active 的 v1.6.2 会被标 rolled_back)。push 同
-版本号会 `version.duplicate` 拒。bump 到 v1.6.3 起跳。
+A:不能。v1.6.2 还在 `app-versions list` 里,且作为**回滚源**被标了
+`rolled_back: true`(标的是回滚源,不是回滚目标 v1.6.1)。push 同版本号会被
+`version.duplicate` 拒;bump 到 v1.6.3 起跳。
 
 **Q:`rollback.unresolved`,我用的版本号 panel 里明明有?**
 A:两个常见原因:(1)拼错了,vX.Y.Z 字面比较;(2)那个 version 行没绑

@@ -1,11 +1,13 @@
 ---
 id: host-enroll
-title: 加新机器(panel 远程 enroll)
+title: 加新机器(云厂商优先,UI fallback)
+sub_workflows: [host-enroll-aliyun, host-enroll-tencent]
 ---
 
 # host-enroll
 
-panel enrollment 当前不走纯 REST(stateful WebSocket 流程)。AI 不能替操作。
+先问云厂商,不要一上来要求用户复制 IP / 用户名 / 密码。用户已经说了云厂商
+时直接跳到对应分支。
 
 ## Step 1 · 探测
 
@@ -15,7 +17,21 @@ fleet hosts list --output json
 
 如已有 online host 满足需求(operator 之前手工录过)→ 直接返回,workflow 结束。
 
-## Step 2 · 引导 operator 上 UI
+## Step 2 · 选择云厂商入口
+
+inline 让用户选:
+
+```
+[1] 阿里云 ECS —— 我用你本机 aliyun CLI 查实例 / 开安全组 / 走云助手安装
+[2] 腾讯云 CVM —— 我用你本机 tccli 查实例 / 开安全组 / 走自动化助手安装
+[3] 其他 / 自建 / 不确定 —— 走 panel UI / SSH fallback
+```
+
+- 选 `1` → 套 [`host-enroll-aliyun`](host-enroll-aliyun.md),完成后回到 Step 4。
+- 选 `2` → 套 [`host-enroll-tencent`](host-enroll-tencent.md),完成后回到 Step 4。
+- 选 `3` → 继续 Step 3。
+
+## Step 3 · UI / SSH fallback
 
 CLI 调 `fleet hosts add` 会返:
 
@@ -37,7 +53,7 @@ AI inline 提示用户:
 等用户回 `ok` / `done` 后,**回到调用方 workflow**(通常是 `app-publish`)
 的 host 解析 step。
 
-## Step 3 · 组件检测
+## Step 4 · 组件检测
 
 录入后:
 
@@ -47,17 +63,17 @@ fleet hosts components check <host> --output json
 
 返 `{ docker, openresty, registry_pull, buildx }` 四个 bool。处理分两路:
 
-**3a · docker 缺**(`component.docker_missing` 隐含场景) —— 直接装,流式可见:
+**4a · docker 缺**(`component.docker_missing` 隐含场景) —— 直接装,流式可见:
 
 ```sh
-fleet hosts components install <host> --component=docker --output json
+fleet hosts components install <host> --components docker --output json
 # → { action_id: "...", total_steps: N }
 fleet exec-actions watch <action_id>
 ```
 
 ExecAction 跑完 `fleet hosts components check` 再确认一次。
 
-**3b · openresty / buildx / registry_pull 缺** —— CLI 拒装,返对应 reason:
+**4b · openresty / buildx / registry_pull 缺** —— CLI 拒装,返对应 reason:
 
 | reason | 处理 |
 | --- | --- |

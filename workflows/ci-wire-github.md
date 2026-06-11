@@ -49,15 +49,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install fleet CLI
-        run: curl -fsSL https://fleet.example/install.sh | sh
+        run: curl -fsSL https://git.puzizi.cn/launchpad/vibe-coding-client/-/raw/main/install.sh | sh
       - name: Push
         env:
           FLEET_TOKEN: ${{ secrets.FLEET_TOKEN }}
           FLEET_PANEL: ${{ secrets.FLEET_PANEL }}
-        run: fleet push <app> --version v${{ github.run_number }}.0.0
+        run: fleet push <app> --version v${{ github.run_number }}.0.0 --watch
 ```
 
 提醒用户改 `app` 名和版本号策略(`run_number` 默认是 patch++,可换 git tag)。
+**CI 里必须带 `--watch`**:push 默认非阻塞(202 受理即 exit 0),不带的话
+job 永远绿,rollout 失败根本反映不到 CI 状态上。
 
 ## Step 4 · 触发一次验证
 
@@ -110,7 +112,7 @@ environment,各跑一次 Step 1 issue 不同 scope 的 token(`--app billing-api`
 **Q:CI 已经在跑 docker build,可以让 fleet 直接拉 image 而不是 push 源码?**
 A:可以。CI 自己 docker build + push 到 registry 后,workflow 改:
 ```yaml
-- run: fleet push <app> --source image --image $REGISTRY/$APP:v${{ ... }} --version ...
+- run: fleet push <app> --source image --image $REGISTRY/$APP:v${{ ... }} --version ... --watch
 ```
 panel 不再重新 build,只拉 image 滚动部署。前提:image-registries 里
 凭据先配好。

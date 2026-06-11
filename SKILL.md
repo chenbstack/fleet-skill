@@ -16,6 +16,18 @@ version: 0.0.1
 - 用户在 `.fleet/state.yaml` 存在的项目里提到「域名 / HTTPS / 扩 / 缩」
 - 用户问「上次 push 是不是挂了 / 为什么没切过去 / 容器起不来」
 
+## 前提 0:fleet CLI 已安装
+
+进入任何 workflow 前先 `command -v fleet` 确认 CLI 在;不在就装:
+
+```sh
+curl -fsSL https://git.puzizi.cn/launchpad/vibe-coding-client/-/raw/main/install.sh | sh
+```
+
+(可加版本参数钉版本:`… | sh -s -- v0.12.0`;私有实例需 `GITLAB_TOKEN`。)
+版本用 `fleet --version` 看 —— 是 flag,**没有** `fleet version` 子命令。
+装好后没登录过就引导 `fleet auth login --panel <url>`。
+
 ## 前提:EE panel
 
 vibe-deploy 的服务端 API(`/api/v1/cli`)**仅 EE 版 panel 提供**。任何命令
@@ -35,7 +47,9 @@ UI 操作」。不要重试,不要试图用别的命令绕。
 | `troubleshoot-build-failed`     | 编译挂了的诊断回路                           |
 | `troubleshoot-runtime-failed`   | 容器跑挂了 / 起不来                          |
 | `host-pick`                     | 选定/修正 state.hosts;preflight 报 host / drift gap |
-| `host-enroll`                   | 加新机器                                     |
+| `host-enroll`                   | 加新机器;先问云厂商,阿里云可走本地 CLI 自动化 |
+| `host-enroll-aliyun`            | 阿里云 ECS:本机 `aliyun` CLI 查实例 / 开安全组 / 云助手接管 |
+| `host-enroll-tencent`           | 腾讯云 CVM:本机 `tccli` 查实例 / 开安全组 / TAT 接管 |
 | `source-pick`                   | 确定项目 source 类型;preflight 报 source gap |
 | `expose-domain`                 | 补齐 expose.domain;preflight 报 cert gap(域名未设)|
 | `rollback`                      | 回滚一个 instance                            |
