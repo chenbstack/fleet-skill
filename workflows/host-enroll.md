@@ -43,6 +43,9 @@ fleet hosts enroll-script --name <机器名> --output json
 把 `script` 存成文件交给用户(或经用户授权的 ssh 直接执行),在目标机以
 root 跑一次:下载 agent → 写配置 → 装 systemd/openrc 服务 → 自动注册。
 脚本幂等,失败可重跑;**内容含一次性 token,不要贴进最终回复或日志**。
+panel 用 https 时证书必须公网受信(Let's Encrypt 即可),脚本会正常校验
+证书,自签会下载失败;内网/dev 可显式给 `--panel-url http://…`(明文传
+token,风险自担)。
 
 ```
 我生成了一段安装脚本(含一次性接入凭证,24 小时有效)。

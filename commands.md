@@ -44,7 +44,7 @@
 
 | 工具 | 用途 |
 | --- | --- |
-| `aliyun` | `host-enroll-aliyun` / `host-buy-aliyun` 使用;查 ECS、读/写安全组、询价下单(AutoPay=false)、云助手 RunCommand 执行接管脚本。只复用用户本机 profile,不把 AccessKey 写入 panel / repo。 |
+| `aliyun` | `host-enroll-aliyun` / `host-buy-aliyun` / `panel-bootstrap` 使用;查 ECS、读/写安全组、询价下单(AutoPay=false)、云助手 RunCommand 执行接管/引导脚本。只复用用户本机 profile,不把 AccessKey 写入 panel / repo。 |
 | `tccli` | `host-enroll-tencent` 使用;查 CVM、读/写安全组、通过 TAT RunCommand 执行接管脚本。只复用用户本机 profile,不把 SecretId / SecretKey 写入 panel / repo。 |
 
 ## 全局约定

@@ -86,7 +86,8 @@ aliyun ecs AuthorizeSecurityGroup --RegionId <region> --SecurityGroupId <sg-id> 
 ## Step 3 · 接管脚本 + 下单(打断点 3)
 
 先从 panel 拿一次性接管脚本(panel 必须从公网可达,确认 `panel_addr` /
-`panel_url` 是 ECS 能连到的地址,必要时用 flag 覆盖):
+`panel_url` 是 ECS 能连到的地址,必要时用 flag 覆盖;https 证书必须公网
+受信,脚本会正常校验,自签会下载失败):
 
 ```sh
 fleet hosts enroll-script --name <用户起的机器名> \

@@ -26,7 +26,9 @@ curl -fsSL https://git.puzizi.cn/launchpad/vibe-coding-client/-/raw/main/install
 
 (可加版本参数钉版本:`… | sh -s -- v0.12.0`;私有实例需 `GITLAB_TOKEN`。)
 版本用 `fleet --version` 看 —— 是 flag,**没有** `fleet version` 子命令。
-装好后没登录过就引导 `fleet auth login --panel <url>`。
+装好后没登录过(`~/.fleet/credentials` 不存在)→ 套
+[`panel-bootstrap`](workflows/panel-bootstrap.md):没面板帮装(没服务器连
+机器一起买),有面板直接 `fleet auth login`。
 
 ## 前提:EE panel
 
@@ -47,6 +49,7 @@ UI 操作」。不要重试,不要试图用别的命令绕。
 | `troubleshoot-build-failed`     | 编译挂了的诊断回路                           |
 | `troubleshoot-runtime-failed`   | 容器跑挂了 / 起不来                          |
 | `host-pick`                     | 选定/修正 state.hosts;preflight 报 host / drift gap |
+| `panel-bootstrap`               | 冷启动:还没有面板 —— 买机装面板 / 已有服务器装面板 / 已有面板登录 |
 | `host-enroll`                   | 加新机器;先问有没有服务器(没有→帮买),再按云厂商分支 |
 | `host-buy-aliyun`               | 没有服务器:对话内选配 / 询价 / AutoPay=false 下单 / 扫码支付 / UserData 自动接入 |
 | `host-enroll-aliyun`            | 阿里云 ECS:本机 `aliyun` CLI 查实例 / 开安全组 / 云助手接管 |
