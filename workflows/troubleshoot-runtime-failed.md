@@ -65,8 +65,16 @@ Y → 套 [`rollback`](rollback.md)。
 **Q:`fleet logs` 返空,但容器确实跑挂了?**
 A:容器可能已经 exited(`docker ps -a` 才能看到)。logs 命令拉的是 `app-<name>-1`
 活容器;如果 panel 端 `desired_state=running` 但 host 上 docker 已经退出多次,
-agent 会 wait + restart。改用 `fleet exec-actions list` 看 deploy 历史,或让
-用户 SSH 上去 `docker ps -a | grep <app>` + `docker logs <exited_id>`。
+agent 会 wait + restart。升级路径:先 **不用 SSH** 拉主机 journald 看 host 层
+(docker daemon / agent / 内核 OOM):
+
+```sh
+fleet logs host <host_id> --priority 0-4 --since -30m --output json
+```
+
+再 `fleet exec-actions list` 看 deploy 历史;还定位不到容器退出原因(容器
+stdout 不进 journald)才让用户 SSH 上去
+`docker ps -a | grep <app>` + `docker logs <exited_id>`。
 
 **Q:`scale --replicas 2 → 4` 后,cpu 还是 100%?**
 A:容器单核 cpu limit 没改。`fleet app-instances get <id>` 看 `resources.cpu_limit`;
@@ -84,7 +92,9 @@ A:多数是**外部依赖**:DB 挂了 / Redis 没响应 / 上游 API down。doct
 `docker exec <container> nc -zv <db_host> <port>` 测外部依赖。
 
 **Q:容器 OOMKilled,但 `mem_pct` 看着不高?**
-A:`docker stats` 给的是**当前瞬时**值,OOMKill 是峰值触发的。改看
+A:`docker stats` 给的是**当前瞬时**值,OOMKill 是峰值触发的。先
+`fleet logs host <host_id> --priority 0-4 --since -1h` 扫内核 OOM killer 记录
+(免 SSH),要确证再看
 `docker inspect <id> --format '{{.State.OOMKilled}} {{.RestartCount}}'`。修法是
 升 `resources.memory_limit` —— CLI **没有** `app-instances update`,去 panel UI
 实例详情改 spec(只改 replicas / host 分布才走 `scale`)。

@@ -1,6 +1,6 @@
 # CLI 命令速查
 
-完整定义见 [`fleetpanel/docs/vibe-deploy.md §3`](https://github.com/fleetpanel/fleetpanel/blob/main/docs/vibe-deploy.md)。本表只列名字 + 一句话用途,供 AI 选命令时快速对应。
+完整定义见 [`fleetpanel/docs/vibe-deploy.md §3`](https://git.puzizi.cn/launchpad/fleetpanel/-/blob/main/docs/vibe-deploy.md)。本表只列名字 + 一句话用途,供 AI 选命令时快速对应。
 
 ## 原子(一条 = 一个 panel REST)
 
@@ -20,7 +20,7 @@
 | `app-versions`      | `latest`(含 `latest_pushed_status`,failed 表示该版本号可同号重推;`active` 只在全部 rollout 成功后切换)/ `list` |
 | `ci-events`         | `list` / `get <id>`                     |
 | `exec-actions`      | `watch <id>`(别名 `stream`;exit code 反映 plan 终态)/ `list` / `get <id>` |
-| `logs`              | `--build <id>` / `--tail` / `--level error` |
+| `logs`              | `[app]`(容器日志):`--build <id>` / `--tail N`(默认 100)/ `--level error` / `--since`(RFC3339 或 `30m`/`2h`)。`panel`:panel 自身日志,`--lines N`(默认 200)。`host <id>`:主机 journald,`--lines N` / `--priority`(journalctl 表达式,如 `0-4`)/ `--since`(如 `-30m`) |
 | `status`            | `[--metrics] [--wait <duration>]`       |
 | `env`               | `list` / `set NAME=VALUE` / `remove NAME` |
 | `init`              | `--app <name>` / `--host <label>`(可重复)/ `--source tarball\|dockerfile\|image\|static` / `--static-dir <dir>` / `--build panel\|ci\|external` / `--version-policy semver\|external\|calver` / `--domain` / `--tls` / `--panel <url>` / `--update`(只改显式给出的字段,resolve 剧本用它写回 state)/ `--reset`(整体重写,用户明说"重来"才加) |
@@ -36,7 +36,7 @@
 | -------------------------------- | ------------------------------------------------- |
 | `site-certs check <domain>`      | `{ exact, wildcard_match, not_after }`            |
 | `hosts components check <host>`  | `{ online, agent, disk, mem, components{...} }`   |
-| `hosts enroll-script --name <n>` | `{ host_id, script, expires_at }`(script 含一次性 token,勿记日志) |
+| `hosts enroll-script --name <n>` | `{ host_id, script, expires_at }`(script 含一次性 token,勿记日志)。可选:`--env` / `--group` / `--tag`(可重复)/ `--panel-addr <host:port>`(agent 连回的 gRPC 地址)/ `--panel-url <url>`(脚本下载 agent 的 HTTP 地址) |
 | `dns-accounts list --for <fqdn>` | 按 zone 反查匹配凭据                              |
 | `probe <url>`                    | http-01 可达性                                    |
 

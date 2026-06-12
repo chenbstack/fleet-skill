@@ -8,7 +8,7 @@ version: 0.0.1
 
 帮 AI IDE agent(Claude Code / Cursor / Codex)驱动 fleet panel 完成
 部署、扩缩容、回滚、排障等全流程。设计文档:
-[`fleetpanel/docs/vibe-deploy.md`](https://github.com/fleetpanel/fleetpanel/blob/main/docs/vibe-deploy.md)。
+[`fleetpanel/docs/vibe-deploy.md`](https://git.puzizi.cn/launchpad/fleetpanel/-/blob/main/docs/vibe-deploy.md)。
 
 ## 何时套用
 
