@@ -6,7 +6,7 @@
 
 | 命令族              | 子命令                                   |
 | ------------------- | ---------------------------------------- |
-| `auth`              | `login` / `logout` / `set-password` / `whoami` |
+| `auth`              | `login`(`--user/--password` 走账密;`--with-token fpat_…` 用已有 PAT,本地验证后落盘)/ `save`(等价 `login --with-token`,panel/token 走全局 flag)/ `logout` / `set-password` / `whoami` |
 | `tokens`            | `list` / `create` / `revoke <id>`       |
 | `users`             | `list` / `get <id>` / `create` / `patch <id>` / `delete <id>` / `reset-password <id>` —— panel 本地账号管理(RBAC policy 走 `patch`) |
 | `hosts`             | `list` / `add` ⚠️ / `enroll-script` / `get <id>` / `remove <id>` —— `enroll-script` 建 pending host 并返自包含安装脚本(一次性 token,24h;cloud-init / 云助手 / root 手跑均可,**勿把 script 写日志**);`add`(panel 代登 SSH)暂走 panel UI(返 `host.enroll_via_ui`) |

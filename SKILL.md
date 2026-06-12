@@ -30,12 +30,29 @@ curl -fsSL https://git.puzizi.cn/launchpad/vibe-coding-client/-/raw/main/install
 [`panel-bootstrap`](workflows/panel-bootstrap.md):没面板帮装(没服务器连
 机器一起买),有面板直接 `fleet auth login`。
 
+用户手里**已有面板签发的 PAT**(`fpat_…` 开头,通常来自面板「访问凭证」页
+的交付文本)→ 不走 bootstrap,直接验证并落盘:
+
+```sh
+fleet auth login --panel "http://<host>:<port>/<入口路径>" --with-token "fpat_…"
+fleet auth whoami --output json   # 确认
+```
+
+`--panel` 必须是**含安全入口的完整地址**(用户浏览器地址栏端口后面那段
+路径)。缺入口前缀会吃到 entrance 防护的 fake 404,典型症状就是下面的
+`panel.no_cliapi` 误报。
+
 ## 前提:EE panel
 
-vibe-deploy 的服务端 API(`/api/v1/cli`)**仅 EE 版 panel 提供**。任何命令
-返回 reason `panel.no_cliapi` 时,说明对端是 CE panel —— 直接告知用户:
-「这台 panel 是 CE(开源版),vibe deploy 需要 fleetpanel-ee;CE 请走 panel
-UI 操作」。不要重试,不要试图用别的命令绕。
+vibe-deploy 的服务端 API(`/api/v1/cli`)**仅 EE 版 panel 提供**。命令返回
+reason `panel.no_cliapi` 时,有两种可能,**先排查第一种再下结论**:
+
+1. **panel URL 缺安全入口前缀** —— entrance 防护对未带前缀的路径返回伪装
+   404,CLI 会误读成「不认识 CLI API」。先核对 URL,
+   `curl -fsS "http://<host>:<port>/<入口路径>/healthz"` 通了再试。
+2. 真的是 CE panel —— 告知用户:「这台 panel 是 CE(开源版),vibe deploy
+   需要 fleetpanel-ee;CE 请走 panel UI 操作」。不要重试,不要试图用别的
+   命令绕。
 
 ## Workflows
 
