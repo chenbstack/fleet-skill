@@ -25,7 +25,7 @@ fleet logs <app> --tail 200 --level error --output json
 
 按发现:
 - DB 连不上 → 检查 `fleet env list <app>`,看 DB_URL 是不是缺/错
-- 端口冲突 → 让用户检查 `state.yaml::expose.port`,或换端口
+- 端口冲突 → 让用户检查项目的 `expose.port`,或换端口
 - secret 漏 → 套 env 配置(可能要套 ci-wire-github 重发 secret)
 
 ## Step 3 · 不挂但表现差

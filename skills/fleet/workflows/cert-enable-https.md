@@ -7,7 +7,7 @@ sub_workflows: [dns-account-add, acme-account-add]
 
 # cert-enable-https
 
-给 `state.yaml::expose.domain` 配齐 HTTPS。`challenge_type` 没指就按域名挑:
+给项目的 `expose.domain` 配齐 HTTPS。`challenge_type` 没指就按域名挑:
 wildcard(`*.foo.com`)只能 dns-01,普通域名优先 http-01。
 
 ## Step 1 · 已有 cert 命中?
@@ -42,7 +42,7 @@ fleet site-certs issue --domain <domain> \
   --output json
 ```
 
-`--install-on` 默认取 `state.yaml::hosts`。返新建 cert 行。
+`--install-on` 默认取项目的 `hosts`。返新建 cert 行。
 
 - exit 2 reason:
   - `cert.host_unresolved` → install_on 里有未录入主机,套 `host-enroll`

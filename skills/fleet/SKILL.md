@@ -13,7 +13,7 @@ version: 0.0.1
 ## 何时套用
 
 - 用户说「帮我发到 fleet / 上线 / 部署 / 滚动 / 回滚 / push 上去」
-- 用户在 `.fleet/state.yaml` 存在的项目里提到「域名 / HTTPS / 扩 / 缩」
+- 用户在已登记的 fleet 项目目录里(`fleet projects which` 能解析到)提到「域名 / HTTPS / 扩 / 缩」
 - 用户问「上次 push 是不是挂了 / 为什么没切过去 / 容器起不来」
 
 ## 前提 0:fleet CLI 已安装
@@ -39,6 +39,8 @@ powershell -ExecutionPolicy Bypass -Command "irm https://fleet.puzizi.cn/install
 (钉版本:`.sh` 加 `… | sh -s -- v0.20.1`;`.ps1` 用
 `& ([scriptblock]::Create((irm https://fleet.puzizi.cn/install-cli.ps1))) v0.20.1`。)
 版本用 `fleet --version` 看 —— 是 flag,**没有** `fleet version` 子命令。
+升级用 `fleet update`(自更新到官网最新版,下载 + sha256 + 原子替换);CLI 每次
+启动也会后台静默查新版,有新版时命令末尾提示一行(网络失败静默,不影响操作)。
 装好后没登录过(`~/.fleet/credentials` 不存在)→ 套
 [`panel-bootstrap`](workflows/panel-bootstrap.md):没面板帮装(没服务器连
 机器一起买),有面板直接 `fleet auth login`。
@@ -90,9 +92,9 @@ reason `panel.no_cliapi` 时,有两种可能,**先排查第一种再下结论**:
 
 ## 编排原则
 
-详见 [`conventions.md`](conventions.md):全局 `--output json` / exit 协议 /
-inline 二选一 / `user_actions_required` / 资源锁退避 / 镜像版本号决策(D20)/
-init 时多 host 选择(D21)。
+详见 [`conventions.md`](conventions.md):项目解析(注册表 + 仓内 state.yaml)/
+全局 `--output json` / exit 协议 / inline 二选一 / `user_actions_required` /
+资源锁退避 / 镜像版本号决策(D20)/ init 时多 host 选择(D21)。
 
 ## CLI 速查
 

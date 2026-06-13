@@ -23,7 +23,9 @@
 | `logs`              | `[app]`(容器日志):`--build <id>` / `--tail N`(默认 100)/ `--level error` / `--since`(RFC3339 或 `30m`/`2h`)。`panel`:panel 自身日志,`--lines N`(默认 200)。`host <id>`:主机 journald,`--lines N` / `--priority`(journalctl 表达式,如 `0-4`)/ `--since`(如 `-30m`) |
 | `status`            | `[--metrics] [--wait <duration>]`       |
 | `env`               | `list` / `set NAME=VALUE` / `remove NAME` |
-| `init`              | `--app <name>` / `--host <label>`(可重复)/ `--source tarball\|dockerfile\|image\|static` / `--static-dir <dir>` / `--build panel\|ci\|external` / `--version-policy semver\|external\|calver` / `--domain` / `--tls` / `--panel <url>` / `--update`(只改显式给出的字段,resolve 剧本用它写回 state)/ `--reset`(整体重写,用户明说"重来"才加) |
+| `init`              | 登记项目。**默认写 `~/.fleet` 注册表**(按目录绑定);`--local` 改写仓内可提交的 `.fleet/state.yaml`(团队共享)。`--app <name>` / `--name <注册名>`(默认取 app)/ `--host <label>`(可重复)/ `--source tarball\|dockerfile\|image\|static` / `--static-dir <dir>` / `--build panel\|ci\|external` / `--version-policy semver\|external\|calver` / `--domain` / `--tls` / `--panel <url>` / `--update`(只改显式给出的字段,写回原来源)/ `--reset`(整体重写,用户明说"重来"才加) |
+| `projects`          | `list` / `rm <name>` / `which` —— 管理 `~/.fleet` 项目注册表;`which` 显示当前目录解析到哪个项目 + 来源(local/registry),用它判断「是否已登记」而非 `test -f`;`rm` 只删注册项不动项目目录 |
+| `update`            | `fleet update [vX.Y.Z]` 自更新到官网最新/指定版(下载 + sha256 + 原子替换自身);`--check` 只比对不装。另:每次命令启动会**后台静默**检查新版(1h 节流、网络失败静默),有新版时在命令末尾提示一行 |
 | `push`              | `--version vX.Y.Z`(必填,见 D20)/ `--strategy rolling\|recreate\|canary`(默认 canary)/ `--canary-replicas` / `--canary-grace` / `--watch`(`-w`);服务端强制内嵌硬前置(D14)。**默认非阻塞**(gh 风格):202 受理即返回 `rollouts[]`,rollout 与版本终态推进全在服务端,断开无影响;**AI 优先 `--watch`**,一条命令流式跟完全部 rollout,exit code 反映成败。`state.source=static` 时 `--version` 不强制,自动 tar.gz `state.static_dir`(默认 `./dist`)上传到 `/apps/{app}/site:upload`,站点缺失时用 state 的 domain/host 自动创建(幂等);同样默认非阻塞、`--watch` 跟完 |
 | `push status [app]` | 最近一次 push 的聚合状态:`{version, build_id, build_status, active, rollouts[]}`(每 rollout 含 host / status / action_id / error)。读持久化行,**panel 重启后仍可查**。`--wait` 阻塞到 build 终态并把终态映射进 exit code(finished=0 / failed=1),`--timeout` 默认 45m;不带 `--wait` 纯查询恒 exit 0 |
 | `push watch [app]`  | attach 最近一次 push(`gh run watch` 等价):逐 rollout 重放 + 跟日志流,再等 build 终态;exit code 反映成败。action 被 panel 重启丢弃时自动降级为纯轮询(状态行还在) |
@@ -50,7 +52,7 @@
 ## 全局约定
 
 - **EE-only**:`/api/v1/cli` 仅 EE panel 提供;CE panel 返回 reason `panel.no_cliapi`,此时告知用户换 EE 或走 UI,不要重试
-- **`[app]` 位置参数**:app 作用域命令(`preflight` / `doctor` / `status` / `logs` / `push` / `env list` / `app-versions latest|list` / `ci-events list` / `app-instances list`)都接受可选位置参数,与 `--app` 等价且优先;缺省回落 `state.yaml::app`。组合查询(`site-certs check <domain>` / `probe <url>`)同为位置参数
+- **`[app]` 位置参数**:app 作用域命令(`preflight` / `doctor` / `status` / `logs` / `push` / `env list` / `app-versions latest|list` / `ci-events list` / `app-instances list`)都接受可选位置参数,与 `--app` 等价且优先;缺省回落到当前目录解析到的项目的 `app`(见 `conventions.md::项目解析`)。组合查询(`site-certs check <domain>` / `probe <url>`)同为位置参数
 - `--output json` 全局支持
 - exit code:`0=done / 2=needs_input(gaps 在 JSON 里) / 1=error`
 - panel URL / token 默认读 `~/.fleet/credentials`,不在每条命令重传

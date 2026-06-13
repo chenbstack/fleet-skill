@@ -1,0 +1,7 @@
+{
+  "name": "fleet",
+  "description": "AI-first 部署到 fleet panel(从代码到上线 HTTPS,workflow 驱动)",
+  "version": "0.0.1",
+  "author": { "name": "fleet", "url": "https://fleet.puzizi.cn" },
+  "homepage": "https://fleet.puzizi.cn"
+}

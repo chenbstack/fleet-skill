@@ -2,12 +2,12 @@
 id: source-pick
 title: 确定项目的 source 类型
 when_to_use: |
-  preflight 报 gap `source`(state.source 未设);或 fleet init 时不确定
+  preflight 报 gap `source`(项目 source 未设);或 fleet init 时不确定
   项目以什么形态交付
 inputs:
   - source: tarball | dockerfile | image | static
 side_effects:
-  - .fleet/state.yaml 的 source(及 static_dir / build)字段
+  - 项目的 source(及 static_dir / build)字段(注册表或仓内 state.yaml)
 ---
 
 # 流程

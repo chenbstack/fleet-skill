@@ -1,13 +1,13 @@
 ---
 id: host-pick
-title: 选定 / 修正 state.yaml 的 hosts(D21)
+title: 选定 / 修正项目的 hosts(D21)
 when_to_use: |
-  preflight 报 gap `host`(state.hosts 为空)或 `drift`(state.yaml 的 hosts
+  preflight 报 gap `host`(项目 hosts 为空)或 `drift`(项目的 hosts
   跟 panel 上实际 instance 分布不一致);或用户想换部署目标机器
 inputs:
   - hosts: 目标 host(label 数组,多选时必须用户拍板)
 side_effects:
-  - .fleet/state.yaml 的 hosts 字段(仅本地,不动 panel)
+  - 项目的 hosts 字段(`~/.fleet` 注册表或仓内 .fleet/state.yaml,仅本地,不动 panel)
 referenced_workflows:
   - host-enroll
 ---
@@ -20,8 +20,8 @@ referenced_workflows:
 2. **分情况**:
    - `drift` gap(两边不一致)→ **inline 问用户哪边是事实**:
      ```
-     [1] panel 为准 —— 把 instance 所在 host 写回 state.yaml(最常见:别人 scale 过)
-     [2] state.yaml 为准 —— 用 fleet app-instances scale 把 instance 挪到 state 声明的 host
+     [1] panel 为准 —— 把 instance 所在 host 写回项目(最常见:别人 scale 过)
+     [2] 项目为准 —— 用 fleet app-instances scale 把 instance 挪到项目声明的 host
      ```
      选 1 → `fleet init --update --hosts <instance 实际 hosts>`;
      选 2 → 套 `app-publish` 的 scale 分支(`fleet app-instances scale`)。

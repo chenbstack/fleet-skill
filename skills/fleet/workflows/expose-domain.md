@@ -2,12 +2,12 @@
 id: expose-domain
 title: 补齐 expose.domain(TLS 需要域名)
 when_to_use: |
-  preflight 报 gap `cert` 且 detail 是 expose.domain unset —— state.yaml 声明
+  preflight 报 gap `cert` 且 detail 是 expose.domain unset —— 项目声明
   了 tls(dns-01 / http-01 / auto)却没给域名
 inputs:
   - domain: 对外域名(只有用户能答)
 side_effects:
-  - .fleet/state.yaml 的 expose.domain
+  - 项目的 expose.domain(注册表或仓内 state.yaml)
 referenced_workflows:
   - cert-enable-https
 ---

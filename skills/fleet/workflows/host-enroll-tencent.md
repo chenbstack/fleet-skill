@@ -6,7 +6,8 @@ title: 腾讯云 CVM 本地 CLI 接管
 # host-enroll-tencent
 
 在用户本机调用 `tccli`。不要把腾讯云 SecretId / SecretKey 写入 panel、仓库或
-`.fleet/state.yaml`;只复用用户本机已有 profile。写操作前必须列出将要改的
+任何项目配置(`~/.fleet` 注册表 / `.fleet/state.yaml`);只复用用户本机已有
+profile。写操作前必须列出将要改的
 实例 / 安全组 / 端口,等用户确认。
 
 ## Step 0 · CLI 与权限预检
@@ -178,5 +179,5 @@ fleet hosts list --output json
 
 - 不调用重置实例密码、停止、重启、销毁实例等破坏性 API,除非用户明确要求。
 - 不把 SSH `CidrBlock` 默认设成 `0.0.0.0/0`。
-- 不保存 SecretId / SecretKey;不把 TAT 脚本里的 token 写入仓库、日志或
-  `.fleet/state.yaml`。
+- 不保存 SecretId / SecretKey;不把 TAT 脚本里的 token 写入仓库、日志或任何
+  项目配置(`~/.fleet` 注册表 / `.fleet/state.yaml`)。

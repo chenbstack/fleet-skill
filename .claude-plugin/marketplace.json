@@ -1,0 +1,11 @@
+{
+  "name": "fleet-vibe-deploy",
+  "owner": { "name": "fleet", "url": "https://fleet.puzizi.cn" },
+  "plugins": [
+    {
+      "name": "fleet",
+      "source": "./",
+      "description": "AI-first 部署到 fleet panel(从代码到上线 HTTPS,workflow 驱动)"
+    }
+  ]
+}

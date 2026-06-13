@@ -13,8 +13,8 @@ referenced_workflows:
 # host-buy-aliyun
 
 四个打断点(凭据 / 选配 / 下单确认 / 扫码支付)都是只有用户能做的事,其余
-全自动。不要把阿里云 AccessKey 写入 panel、仓库或 `.fleet/state.yaml`;
-enroll 脚本含一次性 token,不要打印到最终回复或日志。
+全自动。不要把阿里云 AccessKey 写入 panel、仓库或任何项目配置(`~/.fleet`
+注册表 / `.fleet/state.yaml`);enroll 脚本含一次性 token,不要打印到最终回复或日志。
 
 ## Step 0 · 凭据预检(打断点 1)
 
@@ -172,7 +172,7 @@ enroll-script` 生成,旧 pending 行用 `fleet hosts remove` 清掉。
 ## 禁区
 
 - 不保存 / 转述 AccessKey;它只存在用户本机 `~/.aliyun`。
-- enroll 脚本含一次性 token:不打印进最终回复,不写仓库 / 日志 / state.yaml。
+- enroll 脚本含一次性 token:不打印进最终回复,不写仓库 / 日志 / 项目配置。
 - 不默认开 22 端口;要开必须 `/32` 来源 + 用户确认。
 - `CancelOrder` / 退款 / 释放实例等只在用户明确要求时执行。
 - 同一会话里不重复下单:RunInstances 失败重试前先 `DescribeInstances` +
