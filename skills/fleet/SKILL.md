@@ -38,6 +38,15 @@ powershell -ExecutionPolicy Bypass -Command "irm https://fleet.puzizi.cn/install
 
 (钉版本:`.sh` 加 `… | sh -s -- v0.20.1`;`.ps1` 用
 `& ([scriptblock]::Create((irm https://fleet.puzizi.cn/install-cli.ps1))) v0.20.1`。)
+
+**装完 `command -v fleet` 仍找不到?别误判安装失败** —— `curl | sh` 是子
+shell,它装到的目录(常见 `~/.local/bin` 或 `~/bin`,Apple Silicon Mac 上
+`/usr/local/bin` 多半不可写就会落这里)不一定在当前 shell 的 PATH 上。装完脚本
+末尾那行 `已安装:<path>/fleet` 就是真实落点;直接用全路径,或把该目录加进 PATH
+再继续(macOS/Linux `export PATH="$HOME/.local/bin:$PATH"`)。想锁定落点可
+预设 `FLEET_INSTALL_DIR=/usr/local/bin`(可能要 sudo)。Windows `.ps1` 当场会
+更新本会话 `$env:Path`,新开终端也持久生效。
+
 版本用 `fleet --version` 看 —— 是 flag,**没有** `fleet version` 子命令。
 升级用 `fleet update`(自更新到官网最新版,下载 + sha256 + 原子替换);CLI 每次
 启动也会后台静默查新版,有新版时命令末尾提示一行(网络失败静默,不影响操作)。
