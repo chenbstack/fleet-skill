@@ -49,7 +49,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install fleet CLI
-        run: curl -fsSL https://git.puzizi.cn/launchpad/vibe-coding-client/-/raw/main/install.sh | sh
+        run: curl -fsSL https://fleet.puzizi.cn/install-cli.sh | sh
       - name: Push
         env:
           FLEET_TOKEN: ${{ secrets.FLEET_TOKEN }}

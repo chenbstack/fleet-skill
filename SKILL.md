@@ -18,13 +18,26 @@ version: 0.0.1
 
 ## 前提 0:fleet CLI 已安装
 
-进入任何 workflow 前先 `command -v fleet` 确认 CLI 在;不在就装:
+进入任何 workflow 前先确认 CLI 在(macOS/Linux `command -v fleet`,Windows
+`where fleet`);不在就按平台装(官网 https://fleet.puzizi.cn 分发):
 
 ```sh
-curl -fsSL https://git.puzizi.cn/launchpad/vibe-coding-client/-/raw/main/install.sh | sh
+# macOS / Linux
+curl -fsSL https://fleet.puzizi.cn/install-cli.sh | sh
 ```
 
-(可加版本参数钉版本:`… | sh -s -- v0.12.0`;私有实例需 `GITLAB_TOKEN`。)
+```powershell
+# Windows PowerShell
+irm https://fleet.puzizi.cn/install-cli.ps1 | iex
+```
+
+```bat
+:: Windows cmd.exe(借道 PowerShell)
+powershell -ExecutionPolicy Bypass -Command "irm https://fleet.puzizi.cn/install-cli.ps1 | iex"
+```
+
+(钉版本:`.sh` 加 `… | sh -s -- v0.20.1`;`.ps1` 用
+`& ([scriptblock]::Create((irm https://fleet.puzizi.cn/install-cli.ps1))) v0.20.1`。)
 版本用 `fleet --version` 看 —— 是 flag,**没有** `fleet version` 子命令。
 装好后没登录过(`~/.fleet/credentials` 不存在)→ 套
 [`panel-bootstrap`](workflows/panel-bootstrap.md):没面板帮装(没服务器连
