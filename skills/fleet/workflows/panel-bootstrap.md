@@ -54,6 +54,7 @@ credentials 不存在 / panel 连不上 → Step 1。
    - `<管理端口>/tcp` from `0.0.0.0/0` —— 面板 HTTP(入口路径是 12 位随机
      hex,扫描器拿不到 path 只会看到 fake 404)
    - `7443/tcp` from `0.0.0.0/0` —— 面板 gRPC,以后添加远程主机时 agent 回连
+     (默认 7443;若 UserData 注入了 `FLEETPANEL_GRPC_PORT` 则改放行那个端口)
 2. **UserData 不是 enroll 脚本**,而是面板引导脚本(见下)。
 
 **参数预确认**(打断点,四项一起问;用户回「都随机」/ 不在乎 = 全部由你生成):
@@ -84,6 +85,9 @@ export FLEETPANEL_HTTP_PORT='<PORT>'
 export FLEETPANEL_ENTRANCE='<ENTRANCE>'
 export FLEETPANEL_ADMIN_USER='<ADMIN_USER>'
 export FLEETPANEL_ADMIN_PW='<ADMIN_PW>'
+# agent 网关端口默认 7443(全新机一定空闲,通常不用设)。只有要避开 7443 时
+# 才取消注释填一个空闲端口,并记得安全组同步放行它(见上一条):
+# export FLEETPANEL_GRPC_PORT='<GRPC_PORT>'
 PUB=$(curl -s --max-time 5 http://100.100.100.200/latest/meta-data/eipv4 || true)
 [ -n "$PUB" ] || PUB=$(curl -s --max-time 5 http://100.100.100.200/latest/meta-data/public-ipv4 || true)
 [ -n "$PUB" ] && export FLEETPANEL_PUBLIC_HOST="$PUB"
@@ -103,7 +107,9 @@ curl -fsS --max-time 5 "http://<公网IP>:<PORT>/<ENTRANCE>/healthz"
 ```
 
 超时 → 云助手 `RunCommand` 跑 `journalctl -u fleet-panel -e --no-pager` 定位
-(参考 host-buy-aliyun Step 6 的 RunCommand 用法)。
+(参考 host-buy-aliyun Step 6 的 RunCommand 用法);也看 cloud-init 日志
+`journalctl -u cloud-final --no-pager`,install.sh 装前预检若报「端口已被占用」
+会在这里 die。命中端口占用 → 见 FAQ「装机报端口被占用」。
 
 就绪后 → Step 3。
 
@@ -127,7 +133,8 @@ install.sh 对 env 注入过的项不会再交互追问,所以这条命令粘进
 脚本幂等:已有 `/opt/fleet/panel/config.yaml` 时只升级二进制不动配置。
 
 提醒用户云安全组 / 防火墙放行 `<PORT>/tcp` 与 `7443/tcp`(同 Step 2A 理由),
-然后 healthz 轮询同 Step 2A → Step 3。
+然后 healthz 轮询同 Step 2A → Step 3。若命令以「端口已被占用」报错退出
+(install.sh 装前预检拦下,没装出半成品)→ 见 FAQ「装机报端口被占用」。
 
 ## Step 2C · 已有面板,直接登录
 
@@ -195,6 +202,20 @@ fleet auth whoami --output json   # 确认
 **Q:healthz 一直 404?**
 A:404 是 entrance 防护的 fake 页 —— 说明面板活着但 path 不对,核对
 `<ENTRANCE>` 是否与注入值一致(别丢了前导路径)。连接拒绝才是没起来。
+
+**Q:装机报端口被占用 / 面板装不上?**
+A:install.sh 装前会预检管理端口和 7443,任一被目标机已有进程占用即 `die`
+中止 —— 不会装出一个起不来的面板,所以这是「拦在装之前」,不是坏状态。处理:
+- **管理端口撞了** → 换一个没人用的端口(目标机上 `ss -ltn` 看占用,或本地
+  重新随机一个),把 `<PORT>` 换掉重跑同一条命令:2A 改 UserData 里的
+  `FLEETPANEL_HTTP_PORT` 后重装(机内重跑 install.sh,或重建实例),2B 直接
+  用新端口重跑那条 `curl | sudo env … sh`。**新端口记得同步在云安全组 /
+  防火墙放行**,旧端口可不管。
+- **7443 撞了** → agent 网关端口现在可配。install.sh 默认用 7443,被占时
+  交互安装会提示你换;无人值守(2A UserData / 2B 非交互)就注入
+  `FLEETPANEL_GRPC_PORT=<空闲端口>` 重装(`ss -ltnp` 看占用)。换了网关端口
+  记得云安全组放行新端口(本机防火墙 install.sh 会按新端口自动放行)。
+  腾出 7443 仍是另一条路,但不再是唯一出路。
 
 **Q:试用过期了会怎样?**
 A:`fleet hosts enroll-script` / 面板加主机会返回 reason
